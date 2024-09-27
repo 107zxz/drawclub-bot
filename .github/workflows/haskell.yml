@@ -13,6 +13,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    environment: AUDC
 
     steps:
     - uses: actions/checkout@v4
@@ -40,7 +41,6 @@ jobs:
     - name: Build
       run: cabal build
     - name: Run
-      environment: AUDC
       env:
         DISCORD_SECRET: ${{ secrets.DISCORD_SECRET }}
         DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
