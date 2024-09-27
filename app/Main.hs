@@ -24,21 +24,19 @@ main = do
     let chosen = samplePrompts allPrompts gen
     let numPrompts = 3
 
-    secret <- readFile "secret.txt"
+    secret <- readFile "/Users/107zxz/Documents/Programming/Haskell/stack/amogus/secret.txt"
 
     userFacingError <- runDiscord $ def
              { discordToken = pack secret
              , discordOnLog = \s -> TIO.putStrLn s >> TIO.putStrLn ""
              , discordOnStart = do sendPrompts $ chosen numPrompts; stopDiscord
-             } -- if you see OnLog error, post in the discord / open an issue
+             }
 
     TIO.putStrLn userFacingError
-    -- userFacingError is an unrecoverable error
-    -- put normal 'cleanup' code in discordOnEnd (see examples)
 
 readPrompts :: IO [String]
 readPrompts =
-    lines <$> readFile "prompts.txt"
+    lines <$> readFile "/Users/107zxz/Documents/Programming/Haskell/stack/amogus/prompts.txt"
 
 samplePrompts :: [String] -> StdGen -> Int -> [String]
 samplePrompts prompts gen count = do
@@ -47,7 +45,7 @@ samplePrompts prompts gen count = do
 sendPrompts :: [String] -> DiscordHandler ()
 sendPrompts prompts = do
     let promptstring = unwords ["\n**" ++ p ++ "**" | p <- prompts]
-    let message = printf "Today's weekly prompts are: " ++ promptstring
+    let message = printf "This week's prompts are: " ++ promptstring
 
     sendMessage message
 
