@@ -43,7 +43,7 @@ packages:
 # extra-deps: []
 extra-deps:
 - emoji-0.1.0.2
-- discord-haskell-1.17.0
+- discord-haskell-1.17.0 
 
 # Override default flag values for project packages and extra-deps
 # flags: {}
