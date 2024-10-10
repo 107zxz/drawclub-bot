@@ -10,7 +10,6 @@ import qualified Discord.Requests as R
 import Debug.Trace
 import Data.Text (pack)
 
-import System.Random.Shuffle
 import System.Random
 import Text.Printf (printf)
 import System.Environment (getEnv)
@@ -18,10 +17,11 @@ import System.Environment (getEnv)
 
 main :: IO ()
 main = do
-    gen <- newStdGen
-    allPrompts <- readPrompts
-    let numPrompts = 3
-    let chosen = samplePrompts allPrompts gen numPrompts
+    nouns <- readPrompts "nouns.txt"
+    verbs <- readPrompts "verbs.txt"
+    adjectives <- readPrompts "adjectives.txt"
+
+    chosen <- mapM samplePrompt [verbs, adjectives, nouns]
 
     secret <- getEnv "DISCORD_SECRET"
     channelID <- getEnv "DISCORD_CHANNEL_ID"
@@ -34,20 +34,21 @@ main = do
 
     TIO.putStrLn userFacingError
 
-readPrompts :: IO [String]
-readPrompts =
-    lines <$> readFile "prompts.txt"
+readPrompts :: FilePath -> IO [String]
+readPrompts path =
+    lines <$> readFile path
 
-samplePrompts :: [String] -> StdGen -> Int -> [String]
-samplePrompts prompts gen count = do
-    take count $ shuffle' prompts (length prompts) gen
+samplePrompt :: [String] -> IO String
+samplePrompt prompts = do
+    n <- randomRIO (0,  len)
+    return $ prompts !! n
+    where len = length prompts
 
 sendPrompts :: [String] -> String -> DiscordHandler ()
-sendPrompts prompts channelId = do
-    let promptstring = unwords ["\n**" ++ p ++ "**" | p <- prompts]
-    let message = printf "This week's prompts are: " ++ promptstring
-
-    sendMessage message channelId
+sendPrompts prompts =
+    sendMessage message
+    where   promptString = concat ["\n**" ++ p ++ "**" | p <- prompts]
+            message = printf "This week's prompts are: " ++ promptString
 
 sendMessage :: String -> String -> DiscordHandler ()
 sendMessage message channelId =
