@@ -26,17 +26,21 @@ jobs:
         ghc-version: '8.10.3'
         cabal-version: '3.2'
 
-    - name: Cache dependencies
-      id: cache-deps
-      uses: actions/cache@v4
-      with:
-        path: ${{ env.CABAL_DIR }}
-        key: ${{ runner.os }}-primes
-
     - name: Install dependencies
       run: |
         cabal update
         cabal build --only-dependencies
+
+    - name: Print everything aaa
+      run: |
+        find ~ | grep cabal
+
+    # - name: Cache dependencies
+    #   id: cache-deps
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: ${{ env.CABAL_DIR }}
+    #     key: ${{ runner.os }}-primes
 
     - name: Build
       run: cabal build
